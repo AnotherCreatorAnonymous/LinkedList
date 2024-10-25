@@ -19,6 +19,7 @@ class Node:
     def __str__(self):
         next = self.next
         return "Node("+str(self.value)+") -->" + ("x" if next is None else str(next))
+class node:
 
 class LinkedList:
     def __init__(self, data = []):

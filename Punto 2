@@ -49,13 +49,13 @@ class LinkedList:
     def append(self, value):
         new_node = Node(value)
         if len(self) == 0:
-            self.head = new_node
-            self.setTail(new_node)
+            self.head = self.tail = new_node
         else:
             current_tail = self.tail
             current_tail.setNext(new_node)
+            new_node.setPrev(current_tail)
             self.setTail(new_node)
-        self.len = self.len  + 1
+        self.len += 1
     def search(self, value):
         current = self.head
         while current is not None and current.getValue() != value:

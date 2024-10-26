@@ -1,25 +1,43 @@
 class Node:
-    def __init__(self, value = None):
+    def __init__(self, value=None):
         self.value = value
         self.next = None
+        self.prev = None
+
     def getValue(self):
         return self.value
+
     def setValue(self, new_value):
         self.value = new_value
+
     def getNext(self):
         return self.next
+
     def setNext(self, new_next):
         if isinstance(new_next, Node) or new_next is None:
             self.next = new_next
         else:
-            raise Exception("New Next must be Node")
+            raise Exception("New Next must be a Node or None")
+
+    def getPrev(self):
+        return self.prev
+
+    def setPrev(self, prev_node):
+        if isinstance(prev_node, Node) or prev_node is None:
+            self.prev = prev_node
+        else:
+            raise Exception("New Prev must be a Node or None")
+
     def clear(self):
         self.value = None
         self.next = None
+        self.prev = None  # Añadir esto para eliminar también la referencia a prev
+
     def __str__(self):
-        next = self.next
-        return "Node("+str(self.value)+") -->" + ("x" if next is None else str(next))
-class node:
+        next_str = "x" if self.next is None else str(self.next.value)
+        prev_str = "x" if self.prev is None else str(self.prev.value)
+        return f"Node({self.value}) <-- {prev_str} | --> {next_str}"
+
 
 class LinkedList:
     def __init__(self, data = []):

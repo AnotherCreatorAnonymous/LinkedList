@@ -127,20 +127,31 @@ class LinkedList:
         while current is not None:
             nodes.append(str(current.getValue()))
             current = current.getNext()
-        return " <-> ".join(nodes)
+        return "Queue(" + " -> ".join(self.data) + ")"
 class Queue:
     def __init__(self):
         self.data = []
+        
     def enqueue(self, e):
-        self.data.append(e) #Punto de referencia cómo el inicio
-    def dequeue(self): #como punto de referencia el inicio
-        element = self.data[0]
-        self.data.pop(0)
-        return element
+        self.data.append(e)  # Punto de referencia como el inicio
+        
+    def dequeue(self):  # Como punto de referencia el inicio
+        if not self.isEmpty():
+            element = self.data[0]
+            self.data.pop(0)
+            return element
+        else:
+            raise Exception("Queue is empty.")
+    
+    def isEmpty(self):
+        return len(self.data) == 0
+    
     def __str__(self):
-        return "Queue("+str(self.data[0])+")"
+        return "Queue(" + " -> ".join(self.data) + ")"
+    
     def __len__(self):
         return len(self.data)
+
 #Implementación LIFO
 class Stack:
     def __init__(self):

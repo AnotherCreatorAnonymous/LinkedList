@@ -1,44 +1,25 @@
 class Node:
-    def __init__(self, value=None):
+    def __init__(self, value = None):
         self.value = value
         self.next = None
-        self.prev = None
-
     def getValue(self):
         return self.value
-
     def setValue(self, new_value):
         self.value = new_value
-
     def getNext(self):
         return self.next
-
     def setNext(self, new_next):
         if isinstance(new_next, Node) or new_next is None:
             self.next = new_next
         else:
-            raise Exception("New Next must be a Node or None")
-
-    def getPrev(self):
-        return self.prev
-
-    def setPrev(self, prev_node):
-        if isinstance(prev_node, Node) or prev_node is None:
-            self.prev = prev_node
-        else:
-            raise Exception("New Prev must be a Node or None")
+            raise Exception("New Next must be Node")
 
     def clear(self):
         self.value = None
         self.next = None
-        self.prev = None  # Añadir esto para eliminar también la referencia a prev
-
     def __str__(self):
-        next_str = "x" if self.next is None else str(self.next.value)
-        prev_str = "x" if self.prev is None else str(self.prev.value)
-        return f"Node({self.value}) <-- {prev_str} | --> {next_str}"
-
-
+        next = self.next
+        return "Node("+str(self.value)+") -->" + ("x" if next is None else str(next))
 class LinkedList:
     def __init__(self, data = []):
         self.head, self.tail, self.len = None, None, 0
@@ -49,13 +30,13 @@ class LinkedList:
     def append(self, value):
         new_node = Node(value)
         if len(self) == 0:
-            self.head = self.tail = new_node
+            self.head = new_node
+            self.setTail(new_node)
         else:
             current_tail = self.tail
             current_tail.setNext(new_node)
-            new_node.setPrev(current_tail)
             self.setTail(new_node)
-        self.len += 1
+        self.len = self.len  + 1
     def search(self, value):
         current = self.head
         while current is not None and current.getValue() != value:
@@ -63,6 +44,10 @@ class LinkedList:
         return current
     def getHead(self):
         return self.head
+
+    def setHead(self, head):
+        self.head = head
+        self.prev = None
     def getTail(self):
         return self.tail
     def setTail(self, new_tail):
@@ -74,7 +59,6 @@ class LinkedList:
     def update(self, old_value, new_value):
         node_origin = self.search(old_value)
         node_origin.setValue(new_value)
-        
     def slice(self, value, n=1):
         ld = LinkedList()
         node_origin = self.search(value)
@@ -85,7 +69,6 @@ class LinkedList:
                 current = current.getNext()
                 index += 1
         return ld
-        
     def isEmpty(self):
         return len(self) == 0
     def merge(self, list_b):
@@ -94,40 +77,30 @@ class LinkedList:
         if list_b.isEmpty():
             return self
         self.tail.setNext(list_b.getHead())
-        list_b.getHead().setPrev(self.tail)     
         self.setTail(list_b.getTail())
+
     def delete(self, value):
         value_node = self.search(value)
         if value_node is not None:
-            # Caso 1: Nodo único
-            if value_node == self.head and self.tail == value_node:
-                self.head = self.tail = None
-            # Caso 2: Nodo es la cabeza
-            elif value_node == self.head:
-                self.head = value_node.getNext()
-                if self.head is not None:
-                    self.head.setPrev(None)
-            # Caso 3: Nodo es la cola
-            elif value_node == self.tail:
-                self.tail = value_node.getPrev()
-                self.tail.setNext(None)
-            # Caso 4: Nodo en el medio
+            if len(self) == 1: # Soy el único               #Si es el único valor
+                self.head, self.tail = None, None
             else:
-                prev_node = value_node.getPrev()
-                next_node = value_node.getNext()
-                prev_node.setNext(next_node)
-                next_node.setPrev(prev_node)
-            self.len -= 1
+                if value_node == self.getHead():            #Si el valor es el mismo que el valor de la cabeza
+                    self.head = value_node.getNext()
+                else:
+                    #Buscar el previo a value_node
+                    prev = self.head
+                    while prev.getNext() != value_node:
+                        prev = prev.getNext()
+                    if value_node == self.getTail():       #Si el valor es el mismo que el valor de la cola
+                        self.setTail(prev)
+                    else:
+                        prev.setNext(value_node.getNext())  #Si el valor es cualquier otro valor
+            value_node.clear()                              #borra el valor del nodo
+            self.len -= 1                                   #cambia la longitud al eliminae el valor
         else:
-            raise Exception("Element not found.")
-        
-    def __str__(self):
-        nodes = []
-        current = self.head
-        while current is not None:
-            nodes.append(str(current.getValue()))
-            current = current.getNext()
-        return " <-> ".join(nodes)
+            raise Exception("Element not found.")        # si el valor del nodo es none
+
 class Queue:
     def __init__(self):
         self.data = []
@@ -157,21 +130,9 @@ class Stack:
         return "Stack("+str(self.data[0])+")"
     def __len__(self):
         return len(self.data)
-def main():
-    list = LinkedList([ i for i in range(1000)])
-    print(len(list))
-    current = list.getHead()
-    #print(current)
-    for e in range(len(list)):
-        #print(current.getValue())
-        current = current.getNext()
-    search_result = list.search(900)
-    #print("Buscando un valor", search_result.getValue() if search_result is not None else "Not found")
-    slc = list.slice(900,5)
-    #print(slc.getHead())
-    list_a = LinkedList([ i for i in range(10000)])
-    list_b = LinkedList([i for i in range(10000,100000)])
-    list_a.merge(list_b)
-    print(list_a.getTail())
 
+def main():
+    list = LinkedList([ 1,2,3,4,5,6])
+    list.reverse()
+    print(list)
 main()

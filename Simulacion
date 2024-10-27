@@ -157,26 +157,8 @@ class Stack:
         return "Stack("+str(self.data[0])+")"
     def __len__(self):
         return len(self.data)
+
 def main():
-    list = LinkedList([ i for i in range(1000)])
-    print(len(list))
-    current = list.getHead()
-    #print(current)
-    for e in range(len(list)):
-        #print(current.getValue())
-        current = current.getNext()
-    search_result = list.search(900)
-    #print("Buscando un valor", search_result.getValue() if search_result is not None else "Not found")
-    slc = list.slice(900,5)
-    #print(slc.getHead())
-    list_a = LinkedList([ i for i in range(10000)])
-    list_b = LinkedList([i for i in range(10000,100000)])
-    list_a.merge(list_b)
-    print(list_a.getTail())
-
-main()
-
-def banco_simulacion():
     fila_banco = Queue()
     
     # Encolar algunas personas
@@ -199,3 +181,5 @@ def banco_simulacion():
     
 # Ejecutar la simulación
 banco_simulacion()
+
+main()

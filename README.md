@@ -1,3 +1,6 @@
+Carlos Jiménez, Tomas Espitia, Diego Rojas
+
+
 # punto 2
 
 ## ¿Cómo afecta el tener un nodo previo a las demas funciones?

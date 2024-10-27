@@ -175,3 +175,27 @@ def main():
     print(list_a.getTail())
 
 main()
+
+def banco_simulacion():
+    fila_banco = Queue()
+    
+    # Encolar algunas personas
+    fila_banco.enqueue("Persona1")
+    fila_banco.enqueue("Persona2")
+    fila_banco.enqueue("Persona3")
+    
+    print("Fila inicial del banco:", fila_banco)
+    
+    # Atender a la primera persona en la fila
+    atendido = fila_banco.dequeue()
+    print("Atendiendo a:", atendido)
+    print("Fila después de atender a la primera persona:", fila_banco)
+    
+    # Encolar más personas
+    fila_banco.enqueue("Persona4")
+    fila_banco.enqueue("Persona5")
+    
+    print("Fila final del banco:", fila_banco)
+    
+# Ejecutar la simulación
+banco_simulacion()

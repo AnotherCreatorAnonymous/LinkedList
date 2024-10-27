@@ -1,102 +1,82 @@
-
 class Node:
-    def __init__(self, value = None):
+    def __init__(self, value=None):
         self.value = value
         self.next = None
         self.prev = None
+
     def getValue(self):
         return self.value
+
     def setValue(self, new_value):
         self.value = new_value
+
     def getNext(self):
         return self.next
+
     def setNext(self, new_next):
         if isinstance(new_next, Node) or new_next is None:
             self.next = new_next
         else:
-            raise Exception("New Next must be Node")
+            raise Exception("New Next must be a Node or None")
+
     def getPrev(self):
         return self.prev
-    def setPrev(self, new_prev):
-        if isinstance(new_prev, Node) or new_prev is None:
-            self.prev = new_prev
+
+    def setPrev(self, prev_node):
+        if isinstance(prev_node, Node) or prev_node is None:
+            self.prev = prev_node
         else:
-            raise Exception("New Prev must be Node")
+            raise Exception("New Prev must be a Node or None")
+
     def clear(self):
         self.value = None
         self.next = None
-        self.prev = None
-    def __str__(self):
-        next = self.next
-        return "Node("+str(self.value)+") -->" + ("x" if next is None else str(next))
-    def __str__(self):
-        return '(' + str(self.value) + ') -->' + str(self.next)
-
-
-
-class DoubleLinkedList:
-    def __init__(self, elements):
-        self.head, self.tail = None, None
-        for el in elements:
-            self.reverse(el)
+        self.prev = None  # Añadir esto para eliminar también la referencia a prev
 
     def __str__(self):
-        if self.isEmpty():
-            return "[]"
-        return "[" + str(self.head) + "]"
+        next_str = "x" if self.next is None else str(self.next.value)
+        prev_str = "x" if self.prev is None else str(self.prev.value)
+        return f"Node({self.value}) <-- {prev_str} | --> {next_str}"
 
+
+class LinkedList:
     def __init__(self, data = []):
         self.head, self.tail, self.len = None, None, 0
         for e in data:
             self.append(e)
-
     def __len__(self):
         return self.len
-
     def append(self, value):
         new_node = Node(value)
         if len(self) == 0:
-            self.head = new_node
-            self.setTail(new_node)
+            self.head = self.tail = new_node
         else:
             current_tail = self.tail
             current_tail.setNext(new_node)
             new_node.setPrev(current_tail)
             self.setTail(new_node)
-        self.len = self.len  + 1
-
+        self.len += 1
     def search(self, value):
         current = self.head
         while current is not None and current.getValue() != value:
             current = current.getNext()
         return current
-
     def getHead(self):
         return self.head
-
-    def setHead(self, new_head):
-        if new_head is not None:
-            new_head.setPrev(None)
-            self.head = new_head
-        else:
-            self.head = None
-
     def getTail(self):
         return self.tail
-
     def setTail(self, new_tail):
         if new_tail is not None:
             new_tail.setNext(None)
             self.tail = new_tail
         else:
             self.tail = None
-
     def update(self, old_value, new_value):
         node_origin = self.search(old_value)
         node_origin.setValue(new_value)
-
+        
     def slice(self, value, n=1):
-        ld = DoubleLinkedList()
+        ld = LinkedList()
         node_origin = self.search(value)
         if node_origin is not None:
             current, index = node_origin, 0
@@ -105,57 +85,49 @@ class DoubleLinkedList:
                 current = current.getNext()
                 index += 1
         return ld
-
+        
     def isEmpty(self):
         return len(self) == 0
-
     def merge(self, list_b):
         if self.isEmpty():
             return list_b
         if list_b.isEmpty():
             return self
         self.tail.setNext(list_b.getHead())
+        list_b.getHead().setPrev(self.tail)     
         self.setTail(list_b.getTail())
-
     def delete(self, value):
         value_node = self.search(value)
         if value_node is not None:
-            if len(self) == 1: # Soy el único               #Si es el único valor
-                self.head, self.tail = None, None
-            else:
-                if value_node == self.getHead():            #Si el valor es el mismo que el valor de la cabeza
-                    self.head = value_node.getNext()
+            # Caso 1: Nodo único
+            if value_node == self.head and self.tail == value_node:
+                self.head = self.tail = None
+            # Caso 2: Nodo es la cabeza
+            elif value_node == self.head:
+                self.head = value_node.getNext()
+                if self.head is not None:
                     self.head.setPrev(None)
-                else:
-                    #Buscar el previo a value_node
-                    prev = value_node.getPrev()
-                    if value_node == self.getTail():       #Si el valor es el mismo que el valor de la cola
-                        self.setTail(prev)
-                    else:
-                        nxt = value_node.getNext()
-                        prev.setNext(nxt)  #Si el valor es cualquier otro valor
-                        if nxt is not None:
-                            nxt.setPrev(prev)               # El anterior tiene que no ser vacio para que pueda ser cola
-
-            value_node.clear()                              #borra el valor del nodo
-            self.len -= 1                                   #cambia la longitud al eliminae el valor
+            # Caso 3: Nodo es la cola
+            elif value_node == self.tail:
+                self.tail = value_node.getPrev()
+                self.tail.setNext(None)
+            # Caso 4: Nodo en el medio
+            else:
+                prev_node = value_node.getPrev()
+                next_node = value_node.getNext()
+                prev_node.setNext(next_node)
+                next_node.setPrev(prev_node)
+            self.len -= 1
         else:
             raise Exception("Element not found.")
-
-    def reverse(self, element):
-        if element is not None:
-            newNode = Node(element)
-            if self.isEmpty():
-                self.head = newNode
-                self.tail = newNode
-            else:
-                current = self.head
-                current.setPrev(newNode)
-                newNode.setNext(current)
-                self.head = newNode
-
-
-
+        
+    def __str__(self):
+        nodes = []
+        current = self.head
+        while current is not None:
+            nodes.append(str(current.getValue()))
+            current = current.getNext()
+        return " <-> ".join(nodes)
 class Queue:
     def __init__(self):
         self.data = []
@@ -185,8 +157,21 @@ class Stack:
         return "Stack("+str(self.data[0])+")"
     def __len__(self):
         return len(self.data)
-
 def main():
-    list = DoubleLinkedList([3, 4, 5, 6])
-    print(list)
+    list = LinkedList([ i for i in range(1000)])
+    print(len(list))
+    current = list.getHead()
+    #print(current)
+    for e in range(len(list)):
+        #print(current.getValue())
+        current = current.getNext()
+    search_result = list.search(900)
+    #print("Buscando un valor", search_result.getValue() if search_result is not None else "Not found")
+    slc = list.slice(900,5)
+    #print(slc.getHead())
+    list_a = LinkedList([ i for i in range(10000)])
+    list_b = LinkedList([i for i in range(10000,100000)])
+    list_a.merge(list_b)
+    print(list_a.getTail())
+
 main()

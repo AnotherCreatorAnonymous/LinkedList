@@ -179,7 +179,5 @@ def main():
     
     print("Fila final del banco:", fila_banco)
     
-# Ejecutar la simulación
-banco_simulacion()
 
 main()
